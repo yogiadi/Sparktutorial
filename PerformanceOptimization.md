@@ -66,16 +66,24 @@ Partitions - Right Sizing - Shuffle - Master Equation
 Example
 
 Shuffle stage i/p = 210 gb
+
 x = 210000 mb/200mb = 1050
+
 spark.conf.set("spark.sql.shuffle.partitions", 1050)
+
 BUT -> if cluster has 2000 cores
+
 spark.conf.set("spark.sql.shuffle.partitions", 2000)
+
 
 ## Summary Metrics
 
 Check summary metrics in stages.
+
 Check for spills. 
+
 Min, 25th, Median, 75th and Max should be consistent. 
+
 Above is calculated by dividing "Shuffle Read"/200 partitions.
 
 
