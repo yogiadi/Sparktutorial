@@ -213,3 +213,4 @@ TBD
 * Use CLUSTER BY when required.
 * Pushed Predicate Filters.
 * Connect Spark UI numbers with jobs and tasks.
+* Use Salting or break up query and use UNION ALL to join queries to counter data skewness.
