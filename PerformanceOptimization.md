@@ -153,3 +153,62 @@ Above is calculated by dividing "Shuffle Read"/200 partitions.
   - Driver
   - Horizontal
   - Executor
+
+# Physical Plans in Spark SQL
+
+Logical Planning -> Physical Plan -> Execution(RDD)
+
+Logical info doesn't contain precise information.
+Logical Plan is converted to Physical Plan.
+
+Logical Plan (Join) -> Physical Plan(Sort Merge join)
+                    -> Physical Plan(Broadcast Hash join)
+                    
+df.queryExecution.sparkPlan
+df.queryExecution.ExecutedPlan
+
+#### Plan on Spark UI
+
+== Parsed Logical Plan ==
+== Analyzed Logical Plan ==
+== Optimized Logical Plan ==
+== Physical Plan ==
+
+## Operators
+
+- FileScan
+  * Pair above numbers with info in Jobs and Stages tab in Spark UI for example-
+    * Number of files read should be equal to number of Tasks.
+    * Filesystem read data size total is equal to Input size.
+    * Size of files read total.
+    * Rows o/p.
+  * FileScan(String Representation)
+    - DataFilters
+    - PartitionFilters
+    - PushedFilters
+    - SelectedBucket(bucket pruning)
+    - Partition (Partition pruning)
+- Exchange
+  * Represents shuffle - physical data movement on the cluster which is quie expensive.
+- HashAggregate, SortAggregate, ObjectHashAggregate
+- SortMerge Join
+  * Represents joining 2 dataframes.
+  * Exchanges and sort often before Sort Merge join.
+- BroadcastHash Join
+
+## Ensure Requirements
+
+TBD
+
+## Reuse Exchange
+
+TBD
+
+## Final Performance Tuning
+
+* Check for Spills in Stages with Summary metrics.
+  - Change shuffle partitions.
+  - Use Broadcast hash join
+* Caching only when necessary
+* Use CLUSTER BY when required.
+* Pushed Predicate Filters.
