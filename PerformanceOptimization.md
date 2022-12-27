@@ -39,18 +39,18 @@ TBD
 ## Spark Partitions
  
 * Input
- * Controls - Size
-  * spark.default.parallelism(don't use)
-  * spark.sql.files.maxPartitionBytes(mutable)
-   - assuming source has sufficient partitions
+  * Controls - Size
+    * spark.default.parallelism(don't use)
+    * spark.sql.files.maxPartitionBytes(mutable)
+      - assuming source has sufficient partitions
 * Shuffle
- - Controls = Count
-  * spark.sql.shuffle.partitions
+  - Controls = Count
+    * spark.sql.shuffle.partitions
 * Output
- - Control = Size
-  * Coalesce(n) to shrink
-  * Repartition(n) to increase and/or balance(shuffle)
-  * df.write.option("maxRecordsPerFile",N)
+  - Control = Size
+    * Coalesce(n) to shrink
+    * Repartition(n) to increase and/or balance(shuffle)
+    * df.write.option("maxRecordsPerFile",N)
 
 Partitions - Shuffle - Default
 
@@ -59,9 +59,9 @@ Default = 200 Shuffle Partitions
 Partitions - Right Sizing - Shuffle - Master Equation
 
 * Largest Shuffle Stage
- * Target Size <= 200 MB/partition
- * Partition Count = Stage i/p data/Target Size
-  * Solve for Partition Count
+  * Target Size <= 200 MB/partition
+  * Partition Count = Stage i/p data/Target Size
+   * Solve for Partition Count
 
 Example
 
@@ -89,19 +89,19 @@ Above is calculated by dividing "Shuffle Read"/200 partitions.
 ## Input Partitions - Right Sizing
 
 * Use Spark Default(128 mb) unless
- * Increase parallelism
- * Heavily nested/repetitive data
- * Generating data i.e. Explode
- * Source structure is not optimal(upstream)
- * UDFs
- * spark.conf.set("spark.sql.files.maxPartitionBytes", 16777216)
+  * Increase parallelism
+  * Heavily nested/repetitive data
+  * Generating data i.e. Explode
+  * Source structure is not optimal(upstream)
+  * UDFs
+  * spark.conf.set("spark.sql.files.maxPartitionBytes", 16777216)
  
 ## Output Partitions - Right Sizing
 
 * Write once -> Read many
- * More time to write but faster to read
+  * More time to write but faster to read
 * Perfect writes limit parallelism
- * Compactions (minor and major)
+  * Compactions (minor and major)
 
 ## Output Partitions - Composition
 
@@ -116,25 +116,40 @@ Above is calculated by dividing "Shuffle Read"/200 partitions.
 
 * Avoid the spill
 * Maximize parallelism
- * Utilize All Cores
- * Provision only the cores you need
+  * Utilize All Cores
+  * Provision only the cores you need
 
 ## Advanced Optimizations
 
 * Finding imbalance
- * Maximizing Resource requires balance
+  * Maximizing Resource requires balance
   * Task Duration
   * Partition size
- * Skew
+* Skew
   * Check line of various stages in a job.
   * Check in Summary metrics - min, max and Median.
- * Minimized Data Scans
+  * Minimized Data Scans
+* Persisting
   * Cache only when required.
   * Unpersist once done.
   * Cache super set dataset.
-* Persisting
 * Join optimization
+  * Sort Merge Joins(Standard)(Both sides are large)
+  * Broadcast joins(Fastest)(One side is small)
+  * Skew joins
+  * Range joins
+  * Broadcasted Nested Loop Joins
 * Handling skews
+  * Skew join optimization
+    - Salting Technique - Add column to each side with random int between 0 and (spark.sql.shuffle.partitions - 1) to both sides.
 * Expensive Operations
+  * Repartition
+    - Use Coalesce or shuffle partitions
+  * Count
+  * DistinctCount
+  * If distincts are required.
 * UDFs
 * Multi-Dimensional Parallelism
+  - Driver
+  - Horizontal
+  - Executor
