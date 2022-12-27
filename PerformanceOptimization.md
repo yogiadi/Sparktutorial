@@ -86,4 +86,28 @@ Min, 25th, Median, 75th and Max should be consistent.
 
 Above is calculated by dividing "Shuffle Read"/200 partitions.
 
+## Input Partitions - Right Sizing
 
+* Use Spark Default(128 mb) unless
+ * Increase parallelism
+ * Heavily nested/repetitive data
+ * Generating data i.e. Explode
+ * Source structure is not optimal(upstream)
+ * UDFs
+ * spark.conf.set("spark.sql.files.maxPartitionBytes", 16777216)
+ 
+## Output Partitions - Right Sizing
+
+* Write once -> Read many
+ * More time to write but faster to read
+* Perfect writes limit parallelism
+ * Compactions (minor and major)
+
+## Output Partitions - Composition
+
+* df.write.option("maxRecordsPerFile",n)
+* df.coalesce(n).write
+* df.repartition(n).write
+* df.repartition(n, [ColA...]).write
+* spark.sql.shuffle.partitions(n)
+* df.localCheckpoint(..).repartition(n).write
