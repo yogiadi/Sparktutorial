@@ -212,3 +212,4 @@ TBD
 * Caching only when necessary
 * Use CLUSTER BY when required.
 * Pushed Predicate Filters.
+* Connect Spark UI numbers with jobs and tasks.
