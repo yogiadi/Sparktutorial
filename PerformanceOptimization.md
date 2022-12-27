@@ -111,3 +111,30 @@ Above is calculated by dividing "Shuffle Read"/200 partitions.
 * df.repartition(n, [ColA...]).write
 * spark.sql.shuffle.partitions(n)
 * df.localCheckpoint(..).repartition(n).write
+
+## Partitions - Why so serious ?
+
+* Avoid the spill
+* Maximize parallelism
+ * Utilize All Cores
+ * Provision only the cores you need
+
+## Advanced Optimizations
+
+* Finding imbalance
+ * Maximizing Resource requires balance
+  * Task Duration
+  * Partition size
+ * Skew
+  * Check line of various stages in a job.
+  * Check in Summary metrics - min, max and Median.
+ * Minimized Data Scans
+  * Cache only when required.
+  * Unpersist once done.
+  * Cache super set dataset.
+* Persisting
+* Join optimization
+* Handling skews
+* Expensive Operations
+* UDFs
+* Multi-Dimensional Parallelism
